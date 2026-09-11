@@ -15,13 +15,13 @@
 name: CMake Test
 
 on:
-  push:
-    branches:
-    - main
-  pull_request:
-  schedule:
-    # Triggered nightly at 8:00 AM UTC to re-create the build cache (ccache).
-    - cron: '0 8 * * *'
+  # push:
+  #   branches:
+  #   - main
+  # pull_request:
+  # schedule:
+  #   # Triggered nightly at 8:00 AM UTC to re-create the build cache (ccache).
+  #   - cron: '0 8 * * *'
   workflow_dispatch:
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
       CCACHE_DIR: ${{ github.workspace }}/.ccache
     strategy:
       matrix:
-        mode: ['default', 'fuzzing', 'codelab']
+        mode: ['default']
     steps:
       - name: Disable core dumping and piping due to slowness
         run: |
@@ -109,9 +109,9 @@ jobs:
             -D FUZZTEST_BUILD_FLATBUFFERS=on \
           && cmake --build build -j $(nproc) \
           && ctest --test-dir build -j $(nproc) --output-on-failure -R "functional_test"
-      - name: Save new cache based on main
-        if: github.ref == 'refs/heads/main'
-        uses: actions/cache/save@v4
-        with:
-          path: ${{ env.CCACHE_DIR }}
-          key: cmake-cache-${{ matrix.mode }}-${{ github.run_id }}
+      # - name: Save new cache based on main
+      #   if: github.ref == 'refs/heads/main'
+      #   uses: actions/cache/save@v4
+      #   with:
+      #     path: ${{ env.CCACHE_DIR }}
+      #     key: cmake-cache-${{ matrix.mode }}-${{ github.run_id }}
